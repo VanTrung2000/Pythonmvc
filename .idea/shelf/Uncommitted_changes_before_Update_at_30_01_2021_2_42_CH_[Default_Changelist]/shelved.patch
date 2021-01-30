@@ -1,0 +1,151 @@
+Index: sinhvien_view.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import sinhvien_db\r\n\r\nclass SinhVienView(object):\r\n\r\n    #Hàm hiển thị tất cả dữ liệu về sinhvien\r\n    def display_all_sinhvien(self, items):\r\n        print(\"Dữ liệu về các sinhvien thu được như sau:\")\r\n        for item in items:\r\n            print(\"ID: {}, họ và tên: {}\".format(item.idSINHVIEN, item.hoten))\r\n        print(\"-----Kết thúc hiển thị dữ liệu------\")\r\n\r\n    def ket_qua_insert(self, resultID):\r\n        id = resultID[0]\r\n        if id > 0:\r\n                print(\"Insert thanh cong\")\r\n        else:\r\n                print(\"Fail\")\r\n\r\n    def ket_qua_update(self):\r\n        print(\"Update thanh cong\")\r\n\r\n    def ket_qua_delete(self):\r\n        print(\"Delete thanh cong\")
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/sinhvien_view.py b/sinhvien_view.py
+--- a/sinhvien_view.py	(revision 8ce07472a118a402573df9132a6e7286caeddac8)
++++ b/sinhvien_view.py	(date 1611992447327)
+@@ -2,7 +2,6 @@
+ 
+ class SinhVienView(object):
+ 
+-    #Hàm hiển thị tất cả dữ liệu về sinhvien
+     def display_all_sinhvien(self, items):
+         print("Dữ liệu về các sinhvien thu được như sau:")
+         for item in items:
+Index: sinhvien_db.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import sqlalchemy as db\r\n\r\n#Xây dựng hàm thiết lập kết nối đến csdl\r\n#Trả về đối tượng là connection, metadata và engine\r\ndef ket_noi_den_csdl(database_server, username, password, database):\r\n    connection_str = \"mysql://{}:{}@{}/{}\".format(username, password, database_server, database)\r\n    engine = db.create_engine(connection_str)\r\n    connection = engine.connect()\r\n    metadata = db.MetaData()\r\n    return connection, metadata, engine\r\n\r\n#Xây dựng hàm lấy tất cả dữ liệu của bảng sinhvien\r\ndef lay_tat_ca_du_lieu_bang_sinhvien(connection, metadata, engine):\r\n    # Lấy đối tượng SinhVien trong csdl\r\n    sinhvien = db.Table('sinhvien', metadata, autoload=True, autoload_with=engine)\r\n\r\n    # Lấy tất cả dữ liệu của bảng sinhvien - tương đương câu lênh SELECT * FROM sinhvien\r\n    query = db.select([sinhvien])\r\n\r\n    ResultProxy = connection.execute(query)\r\n    ResultSet = ResultProxy.fetchall()\r\n\r\n    return ResultSet\r\n\r\n#Hàm insert\r\ndef them_sinhvien(connection, metadata, engine,\r\n                hoten):\r\n    # Lấy đối tượng person từ bảng person trong csdl\r\n    sinhvien = db.Table('sinhvien', metadata, autoload=True, autoload_with=engine)\r\n    # Chèn 1 dòng vào bảng sinhvien\r\n    query = db.insert(sinhvien).values(hoten=hoten)\r\n    ResultProxy = connection.execute(query)\r\n    # Trả về giá trị id vừa được sinh\r\n    return ResultProxy.inserted_primary_key\r\n\r\n#Hàm update\r\ndef update_sv(connection,metadata, engine,hoten,idSINHVIEN):\r\n    sinhvien = db.Table('sinhvien', metadata, autoload=True, autoload_with=engine)\r\n    query_insert = db.update(sinhvien).values(hoten=hoten).where(sinhvien.columns.idSINHVIEN == idSINHVIEN)\r\n    ResultProxy = connection.execute(query_insert)\r\n    return ResultProxy\r\n\r\n#Hàm delete\r\ndef delete_sv(connection,metadata, engine,idSINHVIEN):\r\n    sinhvien = db.Table('sinhvien', metadata, autoload=True, autoload_with=engine)\r\n    query_delete = db.delete(sinhvien).where(sinhvien.columns.idSINHVIEN == idSINHVIEN)\r\n    ResultProxy = connection.execute(query_delete)\r\n    return ResultProxy
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/sinhvien_db.py b/sinhvien_db.py
+--- a/sinhvien_db.py	(revision 8ce07472a118a402573df9132a6e7286caeddac8)
++++ b/sinhvien_db.py	(date 1611992431917)
+@@ -1,7 +1,5 @@
+ import sqlalchemy as db
+ 
+-#Xây dựng hàm thiết lập kết nối đến csdl
+-#Trả về đối tượng là connection, metadata và engine
+ def ket_noi_den_csdl(database_server, username, password, database):
+     connection_str = "mysql://{}:{}@{}/{}".format(username, password, database_server, database)
+     engine = db.create_engine(connection_str)
+@@ -9,12 +7,9 @@
+     metadata = db.MetaData()
+     return connection, metadata, engine
+ 
+-#Xây dựng hàm lấy tất cả dữ liệu của bảng sinhvien
+ def lay_tat_ca_du_lieu_bang_sinhvien(connection, metadata, engine):
+-    # Lấy đối tượng SinhVien trong csdl
+     sinhvien = db.Table('sinhvien', metadata, autoload=True, autoload_with=engine)
+ 
+-    # Lấy tất cả dữ liệu của bảng sinhvien - tương đương câu lênh SELECT * FROM sinhvien
+     query = db.select([sinhvien])
+ 
+     ResultProxy = connection.execute(query)
+@@ -22,25 +17,20 @@
+ 
+     return ResultSet
+ 
+-#Hàm insert
++
+ def them_sinhvien(connection, metadata, engine,
+                 hoten):
+-    # Lấy đối tượng person từ bảng person trong csdl
+     sinhvien = db.Table('sinhvien', metadata, autoload=True, autoload_with=engine)
+-    # Chèn 1 dòng vào bảng sinhvien
+     query = db.insert(sinhvien).values(hoten=hoten)
+     ResultProxy = connection.execute(query)
+-    # Trả về giá trị id vừa được sinh
+     return ResultProxy.inserted_primary_key
+ 
+-#Hàm update
+ def update_sv(connection,metadata, engine,hoten,idSINHVIEN):
+     sinhvien = db.Table('sinhvien', metadata, autoload=True, autoload_with=engine)
+     query_insert = db.update(sinhvien).values(hoten=hoten).where(sinhvien.columns.idSINHVIEN == idSINHVIEN)
+     ResultProxy = connection.execute(query_insert)
+     return ResultProxy
+ 
+-#Hàm delete
+ def delete_sv(connection,metadata, engine,idSINHVIEN):
+     sinhvien = db.Table('sinhvien', metadata, autoload=True, autoload_with=engine)
+     query_delete = db.delete(sinhvien).where(sinhvien.columns.idSINHVIEN == idSINHVIEN)
+Index: sinhvien_controller.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import sinhvien_db\r\n\r\nclass SinhvienController(object):\r\n    #Phương thức khởi tạo\r\n    def __init__(self, model, view):\r\n        self.model = model\r\n        self.view = view\r\n\r\n    #Phương thức hiển thị tất cả dữ liệu của bảng person\r\n    def show_all_sinhvien(self):\r\n        items = self.model.get_all_sinhvien()\r\n        self.view.display_all_sinhvien(items)\r\n\r\n    #Phương thức insert\r\n    def them_sinhvien(self, hoten):\r\n        resultID = self.model.them_sinhvien(hoten)\r\n        self.view.ket_qua_insert(resultID)\r\n    #Phương thức update\r\n    def update_sinhvien(self, hoten, idSINHVIEN):\r\n        self.model.update_sinhvien(hoten, idSINHVIEN)\r\n        self.view.ket_qua_update()\r\n\r\n    #Phương thức delete\r\n    def delete_sinhvien(self, idSINHVIEN):\r\n        self.model.delete_sinhvien(idSINHVIEN)\r\n        self.view.ket_qua_delete()
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/sinhvien_controller.py b/sinhvien_controller.py
+--- a/sinhvien_controller.py	(revision 8ce07472a118a402573df9132a6e7286caeddac8)
++++ b/sinhvien_controller.py	(date 1611992394292)
+@@ -1,26 +1,22 @@
+ import sinhvien_db
+-
+ class SinhvienController(object):
+-    #Phương thức khởi tạo
+     def __init__(self, model, view):
+         self.model = model
+         self.view = view
+ 
+-    #Phương thức hiển thị tất cả dữ liệu của bảng person
+     def show_all_sinhvien(self):
+         items = self.model.get_all_sinhvien()
+         self.view.display_all_sinhvien(items)
+ 
+-    #Phương thức insert
++
+     def them_sinhvien(self, hoten):
+         resultID = self.model.them_sinhvien(hoten)
+         self.view.ket_qua_insert(resultID)
+-    #Phương thức update
++
+     def update_sinhvien(self, hoten, idSINHVIEN):
+         self.model.update_sinhvien(hoten, idSINHVIEN)
+         self.view.ket_qua_update()
+ 
+-    #Phương thức delete
+     def delete_sinhvien(self, idSINHVIEN):
+         self.model.delete_sinhvien(idSINHVIEN)
+         self.view.ket_qua_delete()
+\ No newline at end of file
+Index: sinhvien_mvc.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import sinhvien_db\r\nimport sinhvien_model, sinhvien_view, sinhvien_controller\r\n\r\ndef start():\r\n    #Khởi tạo đối tượng model\r\n    model = sinhvien_model.SinhVienModel(\"localhost\", \"root\", \"123456\", \"demo\")\r\n    #Khởi tạo đối tượng view\r\n    view = sinhvien_view.SinhVienView()\r\n    #Khởi tạo controller\r\n    controller = sinhvien_controller.SinhvienController(model, view)\r\n\r\n    #Hiển thị tất cả dữ liệu của bảng sinhvien\r\n    # controller.show_all_sinhvien()\r\n    #controller.them_sinhvien(\"Trung dep trai\")\r\n    # Hiển thị tất cả dữ liệu của bảng sinh\r\n    #controller.show_all_sinhvien()\r\n    #controller.update_sinhvien(\"Trung update\",3)\r\n\r\n   ## controller.delete_sinhvien(10)\r\n\r\n    # Hiển thị tất cả dữ liệu của bảng person\r\n    #controller.show_all_sinhvien()\r\n    controller = sinhvien_controller.SinhvienController(model, view)\r\n    item = menu()\r\n    while item in [\"1\", \"2\", \"3\", \"4\"]:\r\n        if item == \"1\":\r\n            controller.show_all_sinhvien()\r\n        elif item == \"2\":\r\n            hoten = input(\"Nhập họ tên: \")\r\n            controller.them_sinhvien(hoten)\r\n        elif item == \"3\":\r\n            hoten = input(\"Nhập họ tên: \")\r\n            id = input(\"Nhập Id:\")\r\n            controller.update_sinhvien(hoten,id)\r\n        elif item == \"4\":\r\n            id = input(\"Nhập Id: \")\r\n            controller.delete_sinhvien(id)\r\n\r\n        item = menu()\r\ndef menu():\r\n    print(\"1: Hiển thị tất cả Sinh viên\")\r\n    print(\"2: Thêm mới Sinh viên\")\r\n    print(\"3: Cập nhật Sinh viên\")\r\n    print(\"4: Xóa Sinh viên\")\r\n    choice = input(\"Bạn hãy chọn các số từ 1 đến 4. Chọn sai thoát khỏi chương trình.\")\r\n    return choice\r\n\r\nif __name__ == \"__main__\":\r\n    start()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/sinhvien_mvc.py b/sinhvien_mvc.py
+--- a/sinhvien_mvc.py	(revision 8ce07472a118a402573df9132a6e7286caeddac8)
++++ b/sinhvien_mvc.py	(date 1611992363242)
+@@ -2,24 +2,9 @@
+ import sinhvien_model, sinhvien_view, sinhvien_controller
+ 
+ def start():
+-    #Khởi tạo đối tượng model
+     model = sinhvien_model.SinhVienModel("localhost", "root", "123456", "demo")
+-    #Khởi tạo đối tượng view
+     view = sinhvien_view.SinhVienView()
+-    #Khởi tạo controller
+     controller = sinhvien_controller.SinhvienController(model, view)
+-
+-    #Hiển thị tất cả dữ liệu của bảng sinhvien
+-    # controller.show_all_sinhvien()
+-    #controller.them_sinhvien("Trung dep trai")
+-    # Hiển thị tất cả dữ liệu của bảng sinh
+-    #controller.show_all_sinhvien()
+-    #controller.update_sinhvien("Trung update",3)
+-
+-   ## controller.delete_sinhvien(10)
+-
+-    # Hiển thị tất cả dữ liệu của bảng person
+-    #controller.show_all_sinhvien()
+     controller = sinhvien_controller.SinhvienController(model, view)
+     item = menu()
+     while item in ["1", "2", "3", "4"]:
