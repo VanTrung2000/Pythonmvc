@@ -12,13 +12,16 @@ def start():
         elif item == "2":
             hoten = input("Nhập họ tên: ")
             controller.them_sinhvien(hoten)
+            controller.show_all_sinhvien()
         elif item == "3":
             hoten = input("Nhập họ tên: ")
             id = input("Nhập Id:")
             controller.update_sinhvien(hoten,id)
+            controller.show_all_sinhvien()
         elif item == "4":
             id = input("Nhập Id: ")
             controller.delete_sinhvien(id)
+            controller.show_all_sinhvien()
 
         item = menu()
 def menu():
